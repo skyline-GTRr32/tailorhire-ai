@@ -36,11 +36,12 @@ pdf_service = PDFService()
 
 # FastAPI app
 app = FastAPI(
-    title="ResumeAI API",
+    title="TailorHire AI API", # Updated brand name
     description="AI-powered resume optimization service",
     version="1.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    root_path="/api" # <--- THIS IS THE CRUCIAL FIX FOR /API PATH
 )
 
 # CORS
@@ -153,7 +154,7 @@ async def upload_resume(file: UploadFile = File(...), user_ip: str = Depends(rat
 # ----------------------
 @app.on_event("startup")
 async def startup_event():
-    logger.info("🚀 ResumeAI Backend starting up...")
+    logger.info("🚀 TailorHire AI Backend starting up...") # Updated brand name
     logger.info(f"📊 Rate limiting: {RATE_LIMIT_REQUESTS} requests / {RATE_LIMIT_WINDOW}s")
     logger.info("✅ Backend ready to accept requests")
     logger.info("✅ PDF Service initialized")
