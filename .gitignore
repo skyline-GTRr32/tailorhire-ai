@@ -12,3 +12,9 @@ __pycache__/
 .tmp/
 
 .env
+strapi-cms/node_modules/
+strapi-cms/.tmp/
+strapi-cms/build/
+strapi-cms/database.db
+strapi-cms/public/uploads/
+app.log

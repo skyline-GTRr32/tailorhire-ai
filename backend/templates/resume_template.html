@@ -6,26 +6,21 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
         
-        /* This is the critical fix: Define the page properties */
         @page {
-            size: Letter; /* Standard US Letter size */
-            margin: 0.75in; /* Sets the margin for the entire page */
+            size: Letter;
+            margin: 0.75in;
         }
 
         body {
             font-family: 'Roboto', sans-serif;
             font-size: 11pt;
-            line-height: 1.4; /* Slightly adjusted for better readability */
+            line-height: 1.4;
             color: #333;
             margin: 0;
             padding: 0;
-            background-color: #fff;
         }
         
-        h1, h2, h3, p, ul {
-            margin: 0;
-            padding: 0;
-        }
+        h1, h2, h3, p, ul { margin: 0; padding: 0; }
 
         .header {
             text-align: center;
@@ -41,17 +36,13 @@
         .contact-info {
             font-size: 9pt;
             color: #555;
-            display: flex; /* Using flexbox for better wrapping */
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0 8px; /* Adds space between items */
         }
         .contact-info a {
             color: #555;
             text-decoration: none;
         }
-        .contact-info .separator {
-            display: none; /* Hide bullets on new lines */
+        .contact-separator { /* New class for the bullet separator */
+            padding: 0 8px;
         }
         .section {
             margin-bottom: 16px;
@@ -66,73 +57,45 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        .item {
-            margin-bottom: 12px;
-        }
+        .item { margin-bottom: 12px; }
         .item-header {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
             margin-bottom: 2px;
         }
-        .item-title {
-            font-size: 11pt;
-            font-weight: 700;
-        }
-        .item-subtitle {
-            font-size: 10pt;
-            font-style: italic;
-            color: #444;
-        }
-        .item-date {
-            font-size: 10pt;
-            font-weight: bold;
-            color: #555;
-            flex-shrink: 0; /* Prevents date from wrapping */
-            padding-left: 16px;
-        }
-        .item-content ul {
-            list-style-type: disc;
-            padding-left: 20px;
-            margin-top: 4px;
-        }
-        .item-content li {
-            margin-bottom: 4px;
-        }
-        .skills-list {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        .skills-list li {
-            margin-bottom: 6px;
-        }
-        .skills-list strong {
-            display: inline-block;
-            width: 150px;
-        }
+        .item-title { font-size: 11pt; font-weight: 700; }
+        .item-subtitle { font-size: 10pt; font-style: italic; color: #444; }
+        .item-date { font-size: 10pt; font-weight: bold; color: #555; flex-shrink: 0; padding-left: 16px; }
+        .item-content ul { list-style-type: disc; padding-left: 20px; margin-top: 4px; }
+        .item-content li { margin-bottom: 4px; }
+        .skills-list { list-style-type: none; padding-left: 0; column-count: 2; column-gap: 20px;}
+        .skills-list li { margin-bottom: 6px; }
+        .skills-category { font-weight: 700; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>{{ data.name }}</h1>
+        <h1>{{ data.name or "Your Name" }}</h1>
         <div class="contact-info">
-            <span>{{ data.contact_info.location }}</span>
-            <span class="separator">&bull;</span>
-            <a href="mailto:{{ data.contact_info.email }}">{{ data.contact_info.email }}</a>
-            <span class="separator">&bull;</span>
-            <span>{{ data.contact_info.phone }}</span>
-            <span class="separator">&bull;</span>
-            <a href="{{ data.contact_info.linkedin }}">{{ data.contact_info.linkedin }}</a>
-            <span class="separator">&bull;</span>
-            <a href="{{ data.contact_info.github }}">{{ data.contact_info.github }}</a>
+            {# --- FIX for Contact Info Spacing --- #}
+            {% if data.contact_info.location %}<span>{{ data.contact_info.location }}</span>{% endif %}
+            {% if data.contact_info.email %}<span class="contact-separator">&bull;</span><a href="mailto:{{ data.contact_info.email }}">{{ data.contact_info.email }}</a>{% endif %}
+            {% if data.contact_info.phone %}<span class="contact-separator">&bull;</span><span>{{ data.contact_info.phone }}</span>{% endif %}
+            {% if data.contact_info.linkedin %}<span class="contact-separator">&bull;</span><a href="{{ data.contact_info.linkedin }}">{{ data.contact_info.linkedin }}</a>{% endif %}
+            {% if data.contact_info.github %}<span class="contact-separator">&bull;</span><a href="{{ data.contact_info.github }}">{{ data.contact_info.github }}</a>{% endif %}
         </div>
     </div>
 
+    {# --- FIX for Conditional Sections --- #}
+    {% if data.summary %}
     <div class="section">
         <h2 class="section-title">Summary</h2>
         <p>{{ data.summary }}</p>
     </div>
+    {% endif %}
 
+    {% if data.experience %}
     <div class="section">
         <h2 class="section-title">Experience</h2>
         {% for job in data.experience %}
@@ -141,18 +104,14 @@
                 <span class="item-title">{{ job.title }}</span>
                 <span class="item-date">{{ job.dates }}</span>
             </div>
-            <div class="item-subtitle">{{ job.company }}, {{ job.location }}</div>
-            <div class="item-content">
-                <ul>
-                    {% for point in job.description %}
-                    <li>{{ point }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <div class="item-subtitle">{{ job.company }}{% if job.location %}, {{ job.location }}{% endif %}</div>
+            <div class="item-content"><ul>{% for point in job.description %}<li>{{ point }}</li>{% endfor %}</ul></div>
         </div>
         {% endfor %}
     </div>
+    {% endif %}
 
+    {% if data.projects %}
     <div class="section">
         <h2 class="section-title">Projects</h2>
         {% for project in data.projects %}
@@ -162,26 +121,27 @@
                 <span class="item-date">{{ project.dates }}</span>
             </div>
             {% if project.link %}<div class="item-subtitle"><a href="{{ project.link }}">{{ project.link }}</a></div>{% endif %}
-            <div class="item-content">
-                <ul>
-                    {% for point in project.description %}
-                    <li>{{ point }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <div class="item-content"><ul>{% for point in project.description %}<li>{{ point }}</li>{% endfor %}</ul></div>
         </div>
         {% endfor %}
     </div>
+    {% endif %}
     
+    {% if data.skills %}
     <div class="section">
         <h2 class="section-title">Skills</h2>
+        {# --- FIX for Skills Formatting --- #}
         <ul class="skills-list">
-            {% for category, skills in data.skills.items() %}
-            <li><strong>{{ category.replace('_', ' & ') }}:</strong> {{ skills | join(', ') }}</li>
+            {% for category, skill_list in data.skills.items() %}
+                {% if skill_list %}
+                    <li><span class="skills-category">{{ category.replace('_', ' & ') }}:</span> {{ skill_list | join(', ') }}</li>
+                {% endif %}
             {% endfor %}
         </ul>
     </div>
+    {% endif %}
 
+    {% if data.education %}
     <div class="section">
         <h2 class="section-title">Education</h2>
          {% for edu in data.education %}
@@ -194,7 +154,9 @@
         </div>
         {% endfor %}
     </div>
+    {% endif %}
     
+    {% if data.certifications %}
     <div class="section">
         <h2 class="section-title">Certifications</h2>
          {% for cert in data.certifications %}
@@ -207,5 +169,6 @@
         </div>
         {% endfor %}
     </div>
+    {% endif %}
 </body>
 </html>
