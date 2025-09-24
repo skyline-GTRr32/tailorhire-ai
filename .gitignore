@@ -1,0 +1,14 @@
+# IDE and OS specific files
+.vscode/
+.idea/
+.DS_Store
+*.pyc
+__pycache__/
+
+# Global log files
+*.log
+
+# Strapi's local database file (if it's in the root)
+.tmp/
+
+.env

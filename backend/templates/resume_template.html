@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ data.name }}'s Resume</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        
+        /* This is the critical fix: Define the page properties */
+        @page {
+            size: Letter; /* Standard US Letter size */
+            margin: 0.75in; /* Sets the margin for the entire page */
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 11pt;
+            line-height: 1.4; /* Slightly adjusted for better readability */
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+        
+        h1, h2, h3, p, ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+        .header h1 {
+            font-size: 28pt;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .contact-info {
+            font-size: 9pt;
+            color: #555;
+            display: flex; /* Using flexbox for better wrapping */
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0 8px; /* Adds space between items */
+        }
+        .contact-info a {
+            color: #555;
+            text-decoration: none;
+        }
+        .contact-info .separator {
+            display: none; /* Hide bullets on new lines */
+        }
+        .section {
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: 14pt;
+            font-weight: 700;
+            color: #333;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .item {
+            margin-bottom: 12px;
+        }
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 2px;
+        }
+        .item-title {
+            font-size: 11pt;
+            font-weight: 700;
+        }
+        .item-subtitle {
+            font-size: 10pt;
+            font-style: italic;
+            color: #444;
+        }
+        .item-date {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #555;
+            flex-shrink: 0; /* Prevents date from wrapping */
+            padding-left: 16px;
+        }
+        .item-content ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-top: 4px;
+        }
+        .item-content li {
+            margin-bottom: 4px;
+        }
+        .skills-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .skills-list li {
+            margin-bottom: 6px;
+        }
+        .skills-list strong {
+            display: inline-block;
+            width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ data.name }}</h1>
+        <div class="contact-info">
+            <span>{{ data.contact_info.location }}</span>
+            <span class="separator">&bull;</span>
+            <a href="mailto:{{ data.contact_info.email }}">{{ data.contact_info.email }}</a>
+            <span class="separator">&bull;</span>
+            <span>{{ data.contact_info.phone }}</span>
+            <span class="separator">&bull;</span>
+            <a href="{{ data.contact_info.linkedin }}">{{ data.contact_info.linkedin }}</a>
+            <span class="separator">&bull;</span>
+            <a href="{{ data.contact_info.github }}">{{ data.contact_info.github }}</a>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Summary</h2>
+        <p>{{ data.summary }}</p>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Experience</h2>
+        {% for job in data.experience %}
+        <div class="item">
+            <div class="item-header">
+                <span class="item-title">{{ job.title }}</span>
+                <span class="item-date">{{ job.dates }}</span>
+            </div>
+            <div class="item-subtitle">{{ job.company }}, {{ job.location }}</div>
+            <div class="item-content">
+                <ul>
+                    {% for point in job.description %}
+                    <li>{{ point }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Projects</h2>
+        {% for project in data.projects %}
+        <div class="item">
+            <div class="item-header">
+                <span class="item-title">{{ project.name }} | {{ project.technologies }}</span>
+                <span class="item-date">{{ project.dates }}</span>
+            </div>
+            {% if project.link %}<div class="item-subtitle"><a href="{{ project.link }}">{{ project.link }}</a></div>{% endif %}
+            <div class="item-content">
+                <ul>
+                    {% for point in project.description %}
+                    <li>{{ point }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="section">
+        <h2 class="section-title">Skills</h2>
+        <ul class="skills-list">
+            {% for category, skills in data.skills.items() %}
+            <li><strong>{{ category.replace('_', ' & ') }}:</strong> {{ skills | join(', ') }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Education</h2>
+         {% for edu in data.education %}
+        <div class="item">
+            <div class="item-header">
+                <span class="item-title">{{ edu.degree }}</span>
+                <span class="item-date">{{ edu.year }}</span>
+            </div>
+            <div class="item-subtitle">{{ edu.institution }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="section">
+        <h2 class="section-title">Certifications</h2>
+         {% for cert in data.certifications %}
+        <div class="item">
+             <div class="item-header">
+                <span class="item-title">{{ cert.name }}</span>
+                <span class="item-date">{{ cert.year }}</span>
+            </div>
+            <div class="item-subtitle">{{ cert.issuer }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# Environment files - CRITICAL FOR SECURITY
+.env
+.env.*
+!/.env.example
+.env.production
+.env.development
+
+# Python virtual environment
+venv/
+.venv/
+
+# Strapi CMS specific build artifacts and modules
+strapi-cms/node_modules/
+strapi-cms/.tmp/
+strapi-cms/build/
+strapi-cms/database.db
+strapi-cms/public/uploads/
+app.log
