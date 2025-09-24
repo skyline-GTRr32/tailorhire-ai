@@ -4,6 +4,7 @@ import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import { Metadata } from "next";
 
+// --- Types ---
 interface RichTextBlock {
   type: string;
   level?: number;
@@ -21,6 +22,7 @@ interface RichTextChild {
   children?: RichTextChild[];
 }
 
+// --- Fetch single article ---
 async function getArticle(slug: string) {
   const strapiUrl = process.env.STRAPI_API_URL;
   const url = `${strapiUrl}/api/articles?filters[slug][$eq]=${slug}&populate=*`;
@@ -30,14 +32,15 @@ async function getArticle(slug: string) {
     if (!res.ok) return null;
     const data = await res.json();
     if (!data.data || data.data.length === 0) return null;
-    return data.data[0]; // ✅ direct article
+    return data.data[0]; // ✅ Strapi v4 returns flat fields, not "attributes"
   } catch (err) {
     console.error("Error fetching single article:", err);
     return null;
   }
 }
 
-function renderRichText(content: RichTextBlock[]) {
+// --- Render rich text ---
+function renderRichText(content: RichTextBlock[] | undefined) {
   if (!Array.isArray(content)) return null;
 
   return content.map((block, idx) => {
@@ -57,7 +60,7 @@ function renderRichText(content: RichTextBlock[]) {
         return (
           <a
             key={cidx}
-            href={child.url}
+            href={child.url || "#"}
             className="text-blue-600 hover:underline"
           >
             {linkText}
@@ -101,6 +104,7 @@ function renderRichText(content: RichTextBlock[]) {
   });
 }
 
+// --- Metadata ---
 export async function generateMetadata({
   params,
 }: {
@@ -109,21 +113,29 @@ export async function generateMetadata({
   const article = await getArticle(params.slug);
   if (!article) return { title: "Article Not Found" };
   return {
-    title: `${article.title} - TailorHire Blog`,
-    description: article.seo_description,
+    title: `${article.title || "Untitled"} - TailorHire Blog`,
+    description: article.seo_description || "",
   };
 }
 
+// --- Blog Page ---
 export default async function BlogPostPage({
   params,
 }: {
   params: { slug: string };
 }) {
   const article = await getArticle(params.slug);
+
   if (!article) notFound();
 
+  const title = article.title || "Untitled";
+  const author = article.author || "TailorHire Team";
+  const publishedAt = article.publishedAt || new Date().toISOString();
   const contentHtml = renderRichText(article.content);
-  const imageUrl = article.featured_image?.url;
+  const imageUrl =
+    article.featured_image?.url ||
+    article.featured_image?.formats?.medium?.url ||
+    null;
 
   return (
     <div className="bg-white">
@@ -132,11 +144,11 @@ export default async function BlogPostPage({
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <header className="mb-8">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-              {article.title}
+              {title}
             </h1>
             <p className="mt-4 text-md text-gray-500">
-              By {article.author || "TailorHire Team"} on{" "}
-              {new Date(article.publishedAt).toLocaleDateString("en-US", {
+              By {author} on{" "}
+              {new Date(publishedAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
@@ -147,8 +159,8 @@ export default async function BlogPostPage({
           {imageUrl && (
             <div className="relative h-96 w-full mb-8 rounded-2xl shadow-lg overflow-hidden">
               <Image
-                src={imageUrl} // ✅ Cloudinary direct URL
-                alt={article.title || "Featured Image"}
+                src={imageUrl}
+                alt={title}
                 fill
                 style={{ objectFit: "cover" }}
                 priority

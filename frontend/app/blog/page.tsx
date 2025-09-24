@@ -32,30 +32,41 @@ export default async function BlogPage() {
         )}
 
         <div className="grid md:grid-cols-2 gap-8">
-          {articles.map((article: any) => (
-            <div
-              key={article.id}
-              className="shadow-md rounded-lg overflow-hidden hover:shadow-xl transition"
-            >
-              {article.featured_image?.url && (
-                <Image
-                  src={article.featured_image.url} // ✅ Cloudinary direct URL
-                  alt={article.title}
-                  width={600}
-                  height={400}
-                  className="w-full h-60 object-cover"
-                />
-              )}
-              <div className="p-4">
-                <h2 className="text-xl font-bold mb-2">
-                  <Link href={`/blog/${article.slug}`}>{article.title}</Link>
-                </h2>
-                <p className="text-gray-600 line-clamp-3">
-                  {article.seo_description}
-                </p>
+          {articles.map((article: any) => {
+            // ✅ fallbacks for image (Cloudinary formats)
+            const imageUrl =
+              article.featured_image?.url ||
+              article.featured_image?.formats?.medium?.url ||
+              article.featured_image?.formats?.small?.url ||
+              null;
+
+            return (
+              <div
+                key={article.id}
+                className="shadow-md rounded-lg overflow-hidden hover:shadow-xl transition"
+              >
+                {imageUrl && (
+                  <Image
+                    src={imageUrl}
+                    alt={article.title || "Blog image"}
+                    width={600}
+                    height={400}
+                    className="w-full h-60 object-cover"
+                  />
+                )}
+                <div className="p-4">
+                  <h2 className="text-xl font-bold mb-2">
+                    <Link href={`/blog/${article.slug}`}>
+                      {article.title || "Untitled"}
+                    </Link>
+                  </h2>
+                  <p className="text-gray-600 line-clamp-3">
+                    {article.seo_description || ""}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </main>
       <Footer />
