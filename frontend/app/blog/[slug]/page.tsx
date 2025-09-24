@@ -4,7 +4,13 @@ import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import { Metadata } from "next";
 
-// --- Types for Strapi RichText ---
+interface RichTextBlock {
+  type: string;
+  level?: number;
+  format?: string;
+  children: RichTextChild[];
+}
+
 interface RichTextChild {
   type: string;
   text?: string;
@@ -15,21 +21,8 @@ interface RichTextChild {
   children?: RichTextChild[];
 }
 
-interface RichTextBlock {
-  type: string;
-  level?: number;
-  format?: string;
-  children?: RichTextChild[];
-}
-
-// --- Fetch single article from Strapi ---
 async function getArticle(slug: string) {
   const strapiUrl = process.env.STRAPI_API_URL;
-  if (!strapiUrl) {
-    console.error("Missing STRAPI_API_URL in env");
-    return null;
-  }
-
   const url = `${strapiUrl}/api/articles?filters[slug][$eq]=${slug}&populate=*`;
 
   try {
@@ -37,93 +30,77 @@ async function getArticle(slug: string) {
     if (!res.ok) return null;
     const data = await res.json();
     if (!data.data || data.data.length === 0) return null;
-    return data.data[0];
-  } catch (error) {
-    console.error("Fetch single article failed:", error);
+    return data.data[0]; // ✅ direct article
+  } catch (err) {
+    console.error("Error fetching single article:", err);
     return null;
   }
 }
 
-// --- Render Strapi rich text ---
 function renderRichText(content: RichTextBlock[]) {
   if (!Array.isArray(content)) return null;
 
-  return content.map((block: RichTextBlock, idx: number) => {
+  return content.map((block, idx) => {
     if (!block || !block.children) return null;
 
     const node = block.children.map((child: RichTextChild, cidx: number) => {
       if (child.type === "text") {
         let text = child.text || "";
-        if (child.bold) text = `<strong>${text}</strong>`;
-        if (child.italic) text = `<em>${text}</em>`;
-        if (child.underline) text = `<u>${text}</u>`;
-        return (
-          <span
-            key={cidx}
-            dangerouslySetInnerHTML={{ __html: text }}
-          />
-        );
+        if (child.bold) return <strong key={cidx}>{text}</strong>;
+        if (child.italic) return <em key={cidx}>{text}</em>;
+        if (child.underline) return <u key={cidx}>{text}</u>;
+        return text;
       }
-
       if (child.type === "link") {
         const linkText =
-          child.children?.map((gc: RichTextChild) => gc.text || "").join("") ||
-          "";
+          child.children?.map((c: RichTextChild) => c.text).join("") || "";
         return (
           <a
             key={cidx}
             href={child.url}
             className="text-blue-600 hover:underline"
-            target={child.url?.startsWith("http") ? "_blank" : "_self"}
-            rel="noopener noreferrer"
           >
             {linkText}
           </a>
         );
       }
-
       return null;
     });
 
     switch (block.type) {
-      case "heading": {
+      case "heading":
         const Tag = `h${block.level || 2}` as keyof JSX.IntrinsicElements;
         return (
           <Tag key={idx} className="my-6 font-bold">
             {node}
           </Tag>
         );
-      }
       case "paragraph":
         return (
           <p key={idx} className="my-4">
             {node}
           </p>
         );
-      case "list": {
+      case "list":
         const ListTag = block.format === "ordered" ? "ol" : "ul";
         return (
           <ListTag
             key={idx}
             className="list-disc list-inside my-4 space-y-2"
           >
-            {(block.children || []).map((li: RichTextChild, liIdx: number) => (
+            {block.children.map((li: RichTextChild, liIdx: number) => (
               <li key={liIdx}>
-                {li.children
-                  ?.map((c: RichTextChild) => c.text || "")
-                  .join("")}
+                {li.children?.map((c: RichTextChild) => c.text).join("")}
               </li>
             ))}
           </ListTag>
         );
-      }
       default:
         return null;
     }
   });
 }
 
-// --- Metadata for SEO ---
 export async function generateMetadata({
   params,
 }: {
@@ -132,12 +109,11 @@ export async function generateMetadata({
   const article = await getArticle(params.slug);
   if (!article) return { title: "Article Not Found" };
   return {
-    title: `${article.attributes.title} - TailorHire Blog`,
-    description: article.attributes.seo_description,
+    title: `${article.title} - TailorHire Blog`,
+    description: article.seo_description,
   };
 }
 
-// --- Page Component ---
 export default async function BlogPostPage({
   params,
 }: {
@@ -146,10 +122,8 @@ export default async function BlogPostPage({
   const article = await getArticle(params.slug);
   if (!article) notFound();
 
-  const attrs = article.attributes;
-  const contentHtml = renderRichText(attrs.content);
-  const assetBaseUrl = process.env.NEXT_PUBLIC_STRAPI_ASSET_URL || "";
-  const imageUrl = attrs.featured_image?.data?.attributes?.url;
+  const contentHtml = renderRichText(article.content);
+  const imageUrl = article.featured_image?.url;
 
   return (
     <div className="bg-white">
@@ -158,11 +132,11 @@ export default async function BlogPostPage({
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <header className="mb-8">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-              {attrs.title}
+              {article.title}
             </h1>
             <p className="mt-4 text-md text-gray-500">
-              By {attrs.author || "TailorHire Team"} on{" "}
-              {new Date(attrs.publishedAt).toLocaleDateString("en-US", {
+              By {article.author || "TailorHire Team"} on{" "}
+              {new Date(article.publishedAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
@@ -173,8 +147,8 @@ export default async function BlogPostPage({
           {imageUrl && (
             <div className="relative h-96 w-full mb-8 rounded-2xl shadow-lg overflow-hidden">
               <Image
-                src={`${assetBaseUrl}${imageUrl}`}
-                alt={attrs.title || "Featured Image"}
+                src={imageUrl} // ✅ Cloudinary direct URL
+                alt={article.title || "Featured Image"}
                 fill
                 style={{ objectFit: "cover" }}
                 priority
