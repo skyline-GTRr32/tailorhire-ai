@@ -1,142 +1,133 @@
-// app/blog/[slug]/page.tsx
-
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Navbar from "@/app/components/Navbar";
+import Footer from "@/app/components/Footer";
+import { Metadata } from "next";
+
+// --- START OF FIX: Define the types for our Strapi data ---
+interface RichTextBlock {
+  type: string;
+  level?: number;
+  format?: string;
+  children: RichTextChild[];
+}
+
+interface RichTextChild {
+  type: string;
+  text?: string;
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  url?: string;
+  children?: RichTextChild[];
+}
+// --- END OF FIX ---
 
 async function getArticle(slug: string) {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_STRAPI_URL ||
-    process.env.STRAPI_API_URL ||
-    "http://127.0.0.1:1337";
-
-  const url = `${baseUrl}/api/articles?filters[slug][$eq]=${encodeURIComponent(
-    slug
-  )}&populate=featured_image`;
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) {
-    console.error("Fetch article failed:", res.status, await res.text());
+  const strapiUrl = process.env.STRAPI_API_URL;
+  const url = `${strapiUrl}/api/articles?filters[slug][$eq]=${slug}&populate=*`;
+  
+  try {
+    const res = await fetch(url, { next: { revalidate: 10 } });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data.data || data.data.length === 0) return null;
+    return data.data[0];
+  } catch (error) {
+    console.error("Fetch single article failed:", error);
     return null;
   }
-  const data = await res.json();
-  return data.data?.[0] ?? null;
 }
 
-function renderRichText(content: any[]) {
-  if (!Array.isArray(content)) return null;
+// --- START OF FIX: Add types to function parameters ---
+function renderRichText(content: RichTextBlock[]) {
+    if (!Array.isArray(content)) return null;
 
-  return content.map((block: any, idx: number) => {
-    const children = block.children || [];
+    return content.map((block, idx) => {
+        if (!block || !block.children) return null;
 
-    const node = children.map((child: any, cidx: number) => {
-      if (!child) return null;
+        const node = block.children.map((child: RichTextChild, cidx: number) => {
+            if (child.type === "text") {
+                let text = child.text || "";
+                if (child.bold) return <strong key={cidx}>{text}</strong>;
+                if (child.italic) return <em key={cidx}>{text}</em>;
+                if (child.underline) return <u key={cidx}>{text}</u>;
+                return text;
+            }
+            if (child.type === "link") {
+                const linkText = child.children?.map((c: RichTextChild) => c.text).join('') || '';
+                return <a key={cidx} href={child.url} className="text-blue-600 hover:underline">{linkText}</a>;
+            }
+            return null;
+        });
 
-      // Text node
-      if (child.type === "text") {
-        let txt = child.text || "";
-        // Replace newline with <br>
-        txt = txt.replace(/\n/g, "<br>");
-        // Apply formatting
-        if (child.bold) txt = `<strong>${txt}</strong>`;
-        if (child.italic) txt = `<em>${txt}</em>`;
-        if (child.underline) txt = `<u>${txt}</u>`;
-        return <span key={cidx} dangerouslySetInnerHTML={{ __html: txt }} />;
-      }
-
-      // Link node
-      if (child.type === "link") {
-        const linkText = (child.children || [])
-          .map((gc: any) => gc.text || "")
-          .join("");
-        return (
-          <a
-            key={cidx}
-            href={child.url}
-            className="text-blue-600 underline hover:text-blue-800"
-            target={child.url.startsWith("http") ? "_blank" : "_self"}
-            rel="noopener noreferrer"
-          >
-            {linkText}
-          </a>
-        );
-      }
-
-      // fallback
-      return null;
+        switch (block.type) {
+            case "heading":
+                const Tag = `h${block.level || 2}` as keyof JSX.IntrinsicElements;
+                return <Tag key={idx} className="my-6 font-bold">{node}</Tag>;
+            case "paragraph":
+                return <p key={idx} className="my-4">{node}</p>;
+            case "list":
+                const ListTag = block.format === 'ordered' ? 'ol' : 'ul';
+                return <ListTag key={idx} className="list-disc list-inside my-4 space-y-2">{block.children.map((li: RichTextChild, liIdx: number) => <li key={liIdx}>{li.children?.map((c: RichTextChild) => c.text).join('')}</li>)}</ListTag>;
+            default:
+                return null;
+        }
     });
+}
+// --- END OF FIX ---
 
-    // Render block types
-    switch (block.type) {
-      case "heading":
-        const level = block.level || 3;
-        const Tag = `h${level}` as keyof JSX.IntrinsicElements;
-        return <Tag key={idx} className="text-xl font-bold my-4">{children.map(c => c.text || "").join("")}</Tag>;
 
-      case "paragraph":
-        return (
-          <p key={idx} className="my-4">
-            {node}
-          </p>
-        );
-
-      case "list":
-        return (
-          <ul key={idx} className="list-disc ml-6 my-4">
-            {(block.children || []).map((li: any, liIdx: number) => (
-              <li key={liIdx}>
-                {(li.children || []).map((gc: any) => gc.text || "").join("")}
-              </li>
-            ))}
-          </ul>
-        );
-
-      default:
-        return <p key={idx}>{children.map(c => c.text || "").join("")}</p>;
-    }
-  });
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const article = await getArticle(params.slug);
+  if (!article) return { title: 'Article Not Found' };
+  return {
+    title: `${article.attributes.title} - TailorHire Blog`,
+    description: article.attributes.seo_description,
+  };
 }
 
-export default async function BlogPostPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   const article = await getArticle(params.slug);
-  if (!article) return notFound();
-
-  const { title, author, content, featured_image, createdAt } = article;
-
-  // Determine image URL
-  let imageUrl: string | null = null;
-  if (featured_image) {
-    imageUrl =
-      featured_image.formats?.medium?.url ||
-      featured_image.url ||
-      null;
-  }
+  if (!article) notFound();
+  
+  const attrs = article.attributes;
+  const contentHtml = renderRichText(attrs.content); // Use the new typed function
+  const assetBaseUrl = process.env.NEXT_PUBLIC_STRAPI_ASSET_URL || '';
+  const imageUrl = attrs.featured_image?.data?.attributes?.url;
 
   return (
-    <article className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-4">{title || "Untitled"}</h1>
-      <p className="text-gray-500 mb-6">
-        By {author || "TailorHire Team"} •{" "}
-        {createdAt ? new Date(createdAt).toLocaleDateString() : ""}
-      </p>
-
-      {imageUrl && (
-        <div className="mb-6">
-          <Image
-            src={`${(process.env.NEXT_PUBLIC_STRAPI_URL ||
-              process.env.STRAPI_API_URL ||
-              "http://127.0.0.1:1337")}${imageUrl}`}
-            alt={title}
-            width={800}
-            height={450}
-            className="rounded-lg object-cover"
-          />
-        </div>
-      )}
-
-      <div className="prose prose-lg">{renderRichText(content)}</div>
-    </article>
+    <div className="bg-white">
+      <Navbar />
+      <main className="pt-24 pb-16">
+        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <header className="mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+              {attrs.title}
+            </h1>
+            <p className="mt-4 text-md text-gray-500">
+              By {attrs.author || "TailorHire Team"} on {new Date(attrs.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+          </header>
+          
+          {imageUrl && (
+            <div className="relative h-96 w-full mb-8 rounded-2xl shadow-lg overflow-hidden">
+              <Image
+                src={`${assetBaseUrl}${imageUrl}`}
+                alt={attrs.title || 'Featured Image'}
+                fill
+                style={{ objectFit: 'cover' }}
+                priority
+              />
+            </div>
+          )}
+          
+          <div className="prose lg:prose-xl mx-auto">
+            {contentHtml}
+          </div>
+        </article>
+      </main>
+      <Footer />
+    </div>
   );
 }
