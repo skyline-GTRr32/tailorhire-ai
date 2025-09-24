@@ -2,13 +2,14 @@
 FROM python:3.11-slim as builder
 
 # Install system dependencies required by WeasyPrint
-# This is the crucial step that fixes the error
+# This now uses the correct, updated package names for the Debian OS
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     python3-dev \
     libffi-dev \
-    pango1.0-tools \
-    libgdk-pixbuf2.0-dev \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libgdk-pixbuf-2.0-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Set up a virtual environment
@@ -25,9 +26,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 FROM python:3.11-slim as final
 
 # Copy system libraries from the builder stage
-COPY --from=builder /usr/lib/x86_64-linux-gnu/ /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/ /lib/x86_64-linux-gnu/
-COPY --from=builder /usr/share/ /usr/share/
+COPY --from=builder /usr/lib/ /usr/lib/
+COPY --from=builder /lib/ /lib/
 
 # Copy the virtual environment from the builder stage
 COPY --from=builder /opt/venv /opt/venv
@@ -44,5 +44,5 @@ COPY . .
 # Expose the port the app runs on
 EXPOSE 8000
 
-# Run the application
+# Set the start command
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
