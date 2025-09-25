@@ -87,7 +87,7 @@ async def health_check():
         version="1.1.0"
     )
 
-@app.post("/optimize", response_model=ResumeOptimizeResponse)
+@app.post("/api/optimize", response_model=ResumeOptimizeResponse)
 async def optimize_resume(
     request: ResumeOptimizeRequest,
     user_ip: str = Depends(rate_limit)
@@ -129,7 +129,7 @@ async def optimize_resume(
         raise HTTPException(status_code=500, detail=f"Failed to optimize resume: {str(e)}")
 
 
-@app.post("/upload")
+@app.post("/api/upload")
 async def upload_resume(file: UploadFile = File(...), user_ip: str = Depends(rate_limit)):
     try:
         logger.info(f"📤 Upload started: {file.filename} ({file.content_type})")
