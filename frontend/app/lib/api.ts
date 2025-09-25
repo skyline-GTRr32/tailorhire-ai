@@ -14,7 +14,7 @@ const api = axios.create({
   },
 })
 
-// Types (unchanged)
+// Types
 export interface OptimizeRequest {
   resume_text: string
   job_description: string
@@ -22,9 +22,9 @@ export interface OptimizeRequest {
 }
 
 export interface OptimizeResponse {
-  optimized_resume_pdf_base64: string;
-  original_resume_text: string;
-  optimized_resume_json: Record<string, any>;
+  optimized_resume_pdf_base64: string
+  original_resume_text: string
+  optimized_resume_json: Record<string, any>
   match_score: number
   key_changes: string[]
   suggestions: string[]
@@ -37,7 +37,7 @@ export interface UploadResponse {
   length: number
 }
 
-// API functions (unchanged)
+// API functions
 export const optimizeResume = async (data: OptimizeRequest): Promise<OptimizeResponse> => {
   try {
     const response = await api.post('/optimize', data)
@@ -56,7 +56,9 @@ export const uploadFile = async (file: File): Promise<UploadResponse> => {
     formData.append('file', file)
     
     const response = await api.post('/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 
+        'Content-Type': 'multipart/form-data',
+      },
     })
     
     return response.data
@@ -64,11 +66,12 @@ export const uploadFile = async (file: File): Promise<UploadResponse> => {
     if (error.response?.data?.detail) {
       throw new Error(error.response.data.detail)
     }
-    throw new Error('Failed to upload file. Please try again.')
+    console.error('Upload error:', error)
+    throw new Error('Failed to upload file. Please try again later.')
   }
 }
 
-// Utility functions (unchanged)
+// Utility functions
 export const formatFileSize = (bytes: number): string => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB']
   if (bytes === 0) return '0 Bytes'
