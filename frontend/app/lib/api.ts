@@ -1,19 +1,20 @@
 // API utilities for backend communication
 import axios from 'axios'
 
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '/api' // Use relative path for production to leverage Next.js proxy
-  : 'http://localhost:8000/api'
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 
+  (process.env.NODE_ENV === 'production' 
+    ? 'https://tailorhire-ai-production.up.railway.app' 
+    : 'http://localhost:8000')
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/api`, // Keep /api prefix for all routes
   timeout: 300000, // 5 minutes for AI processing
   headers: {
     'Content-Type': 'application/json',
   },
 })
 
-// Types
+// Types (unchanged)
 export interface OptimizeRequest {
   resume_text: string
   job_description: string
@@ -36,7 +37,7 @@ export interface UploadResponse {
   length: number
 }
 
-// API functions
+// API functions (unchanged)
 export const optimizeResume = async (data: OptimizeRequest): Promise<OptimizeResponse> => {
   try {
     const response = await api.post('/optimize', data)
@@ -67,7 +68,7 @@ export const uploadFile = async (file: File): Promise<UploadResponse> => {
   }
 }
 
-// Utility functions
+// Utility functions (unchanged)
 export const formatFileSize = (bytes: number): string => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB']
   if (bytes === 0) return '0 Bytes'
