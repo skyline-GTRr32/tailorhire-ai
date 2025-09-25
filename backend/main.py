@@ -40,7 +40,7 @@ app = FastAPI(
     description="AI-powered resume optimization service",
     version="1.1.0",
     docs_url="/docs",
-    redoc_url="/redoc"<--- THIS IS THE CRUCIAL FIX FOR /API PATH
+    redoc_url="/redoc"
 )
 
 # CORS
