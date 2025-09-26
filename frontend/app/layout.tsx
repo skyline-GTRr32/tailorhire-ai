@@ -1,10 +1,13 @@
-import './globals.css'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import { Toaster } from 'react-hot-toast'
-import Script from 'next/script' // Ensure Script is imported for Analytics
+// app/layout.tsx
 
-const inter = Inter({ subsets: ['latin'] })
+import './globals.css';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { Toaster } from 'react-hot-toast';
+import Script from 'next/script';
+import { Analytics } from '@vercel/analytics/react';
+
+const inter = Inter({ subsets: ['latin'] });
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID;
 
@@ -12,10 +15,10 @@ export const viewport = {
   themeColor: '#3b82f6',
   width: 'device-width',
   initialScale: 1
-}
+};
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.tailorhireresume.com'),
+  metadataBase: new URL('https://www.tailoredhireresume.com'),
   
   title: 'TailorHire AI | Free AI Resume Optimizer for Job Seekers',
   description: 'Instantly tailor your resume for any job description with TailorHire AI. Beat ATS systems, highlight your key skills, and land more interviews. Free to use.',
@@ -25,7 +28,7 @@ export const metadata: Metadata = {
     title: 'TailorHire AI: Free AI Resume Tailoring Tool',
     description: 'Stop getting rejected by ATS. TailorHire AI rewrites your resume to perfectly match the job you want, for free.',
     type: 'website',
-    url: 'https://www.tailorhireresume.com',
+    url: 'https://www.tailoredhireresume.com',
     siteName: 'TailorHire AI',
   },
   twitter: {
@@ -33,7 +36,7 @@ export const metadata: Metadata = {
     title: 'TailorHire AI: Free AI Resume Tailoring Tool',
     description: 'Stop getting rejected by ATS. TailorHire AI rewrites your resume to perfectly match the job you want, for free.',
   },
-}
+};
 
 export default function RootLayout({
   children,
@@ -43,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
        <head>
-        {/* Google Analytics Scripts - Add these for when you deploy */}
+        {/* Google Analytics Script */}
         {GA_MEASUREMENT_ID && (
           <>
             <Script
@@ -60,6 +63,26 @@ export default function RootLayout({
             </Script>
           </>
         )}
+
+        {/* Safe AEO Schema Markup Script */}
+        <Script id="web-app-schema" type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "TailorHire AI",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              },
+              "description": "A free AI-powered resume optimizer that tailors your resume to any job description to help you beat ATS systems and land more interviews.",
+              "url": "https://www.tailoredhireresume.com"
+            }
+          `}
+        </Script>
       </head>
       <body className={inter.className}>
         {children}
@@ -72,7 +95,8 @@ export default function RootLayout({
             error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
           }}
         />
+        <Analytics /> {/* Vercel Analytics Component */}
       </body>
     </html>
-  )
+  );
 }
