@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import Script from 'next/script';
-import { Analytics } from "@vercel/analytics/react"
+// Vercel Analytics import has been removed.
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -95,7 +95,7 @@ export default function RootLayout({
             error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
           }}
         />
-        <Analytics /> {/* Vercel Analytics Component */}
+        {/* The <Analytics /> component has been removed. */}
       </body>
     </html>
   );
