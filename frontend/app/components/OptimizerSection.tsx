@@ -105,7 +105,7 @@ export default function OptimizerSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
           {/* Input Section */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -160,7 +160,7 @@ export default function OptimizerSection() {
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="card p-8 min-h-[600px]"
+            className="card p-6 lg:p-8 min-h-[500px] lg:min-h-[600px]"
           >
             {!result ? (
               <div className="h-full flex flex-col items-center justify-center text-center">
@@ -184,7 +184,7 @@ export default function OptimizerSection() {
                     <h4 className="font-semibold text-gray-900 mb-3">Preview Your New PDF:</h4>
                     <iframe 
                         src={`data:application/pdf;base64,${result.optimized_resume_pdf_base64}`}
-                        className="w-full h-80 border rounded-lg"
+                        className="w-full h-64 sm:h-72 md:h-80 border rounded-lg"
                         title="Optimized Resume Preview"
                     />
                 </div>

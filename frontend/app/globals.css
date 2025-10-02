@@ -53,15 +53,15 @@
   
   /* Mobile-optimized spacing */
   .mobile-container {
-    @apply px-4 sm:px-6 lg:px-8;
+    @apply px-4 sm:px-6 lg:px-8 xl:px-12;
   }
   
   .mobile-text {
-    @apply text-sm sm:text-base;
+    @apply text-sm sm:text-base lg:text-lg;
   }
   
   .mobile-heading {
-    @apply text-xl sm:text-2xl lg:text-3xl;
+    @apply text-xl sm:text-2xl lg:text-3xl xl:text-4xl;
   }
 }
 

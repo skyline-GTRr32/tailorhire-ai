@@ -24,6 +24,16 @@ export const metadata: Metadata = {
   description: 'Instantly tailor your resume for any job description with TailorHire AI. Beat ATS systems, highlight your key skills, and land more interviews. Free to use.',
   keywords: 'ai resume builder, resume tailor, ats resume checker, cv optimizer, tailor resume to job description, free resume tool',
   authors: [{ name: 'The TailorHire AI Team' }],
+  icons: {
+    icon: [
+      { url: '/web-app-manifest-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/web-app-manifest-512x512.png', sizes: '512x512', type: 'image/png' }
+    ],
+    apple: [
+      { url: '/web-app-manifest-192x192.png', sizes: '192x192', type: 'image/png' }
+    ]
+  },
+  manifest: '/manifest.json',
   openGraph: {
     title: 'TailorHire AI: Free AI Resume Tailoring Tool',
     description: 'Stop getting rejected by ATS. TailorHire AI rewrites your resume to perfectly match the job you want, for free.',

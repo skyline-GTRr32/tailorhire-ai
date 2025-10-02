@@ -64,14 +64,14 @@ export default function HeroSection() {
               Powered by Advanced AI Technology
             </motion.div>
 
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6">
               Transform Your Resume with{' '}
               <span className="bg-gradient-to-r from-pink-400 to-yellow-400 bg-clip-text text-transparent">
                 AI Power
               </span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed px-4">
               Get past ATS systems and land more interviews with our intelligent
               resume optimization technology that tailors your CV to any job description.
             </p>
@@ -82,7 +82,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12"
+            className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 mb-12 px-4"
           >
             {stats.map((stat, index) => (
               <motion.div
@@ -92,10 +92,10 @@ export default function HeroSection() {
                 transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
                 className="text-center"
               >
-                <div className="text-3xl md:text-4xl font-bold text-pink-400 mb-2">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-pink-400 mb-2">
                   {stat.number}
                 </div>
-                <div className="text-white/80 text-sm md:text-base">
+                <div className="text-white/80 text-xs sm:text-sm md:text-base">
                   {stat.label}
                 </div>
               </motion.div>

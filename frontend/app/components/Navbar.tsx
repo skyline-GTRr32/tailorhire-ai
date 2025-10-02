@@ -74,7 +74,7 @@ export default function Navbar() {
                     <span>About</span>
                     <ChevronDownIcon className="w-4 h-4 ml-1"/>
                 </button>
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                     <div className="py-2">
                         {aboutLinks.map(link => (
                             <Link key={link.name} href={link.href} legacyBehavior>

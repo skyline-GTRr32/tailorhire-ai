@@ -58,7 +58,7 @@ export default function AnalyticsSection() {
         </motion.div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-20">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -70,7 +70,7 @@ export default function AnalyticsSection() {
                 y: -5,
                 transition: { duration: 0.2 }
               }}
-              className="card p-8 text-center hover:shadow-xl transition-all duration-300"
+              className="card p-6 lg:p-8 text-center hover:shadow-xl transition-all duration-300"
             >
               <div className={`inline-flex p-4 rounded-2xl ${stat.bg} mb-6`}>
                 <stat.icon className={`w-8 h-8 ${stat.color}`} />
@@ -108,7 +108,7 @@ export default function AnalyticsSection() {
             How It Works
           </h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {[
               {
                 step: '1',

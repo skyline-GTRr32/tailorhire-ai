@@ -76,7 +76,7 @@ export default function FeaturesSection() {
         </motion.div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
@@ -87,7 +87,7 @@ export default function FeaturesSection() {
               whileHover={{ y: -5 }}
               className="group"
             >
-              <div className="card p-8 h-full hover:shadow-2xl transition-all duration-300 group-hover:scale-105">
+              <div className="card p-6 lg:p-8 h-full hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
                 {/* Icon */}
                 <div className={`w-16 h-16 ${feature.bgColor} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                   <feature.icon className={`w-8 h-8 ${feature.color}`} />
