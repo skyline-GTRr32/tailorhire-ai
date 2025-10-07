@@ -2,7 +2,8 @@ import google.generativeai as genai
 import os
 import json
 import asyncio
-import fitz  # PyMuPDF
+import PyPDF2
+import io
 from typing import Any, Dict, List
 from app.utils.logger import setup_logger
 
@@ -129,12 +130,12 @@ class AIService:
             raise ValueError(f"AI analysis failed: {e}")
 
     def _extract_text_from_pdf(self, pdf_content: bytes) -> str:
-        """Extract text from PDF content."""
+        """Extract text from PDF content using PyPDF2."""
         try:
-            doc = fitz.open(stream=pdf_content, filetype="pdf")
+            pdf_reader = PyPDF2.PdfReader(io.BytesIO(pdf_content))
             text = ""
-            for page in doc:
-                text += page.get_text()
+            for page in pdf_reader.pages:
+                text += page.extract_text()
             return text
         except Exception as e:
             logger.error(f"Error extracting text from PDF: {str(e)}")
