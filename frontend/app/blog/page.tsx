@@ -22,16 +22,16 @@ export default async function BlogPage() {
   const articles = await getArticles();
 
   return (
-    <div className="bg-white">
+    <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
-      <main className="pt-24 pb-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold mb-8">TailorHire Blog</h1>
+      <main className="flex-1 pt-24 pb-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 className="responsive-h2 font-bold mb-8">TailorHire Blog</h1>
 
         {articles.length === 0 && (
           <p className="text-gray-500">No articles found.</p>
         )}
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="responsive-grid-2 gap-8">
           {articles.map((article: any) => {
             // ✅ fallbacks for image (Cloudinary formats)
             const imageUrl =
@@ -55,12 +55,12 @@ export default async function BlogPage() {
                   />
                 )}
                 <div className="p-4">
-                  <h2 className="text-xl font-bold mb-2">
+                  <h2 className="text-lg sm:text-xl font-bold mb-2">
                     <Link href={`/blog/${article.slug}`}>
                       {article.title || "Untitled"}
                     </Link>
                   </h2>
-                  <p className="text-gray-600 line-clamp-3">
+                  <p className="text-gray-600 line-clamp-3 text-sm sm:text-base">
                     {article.seo_description || ""}
                   </p>
                 </div>

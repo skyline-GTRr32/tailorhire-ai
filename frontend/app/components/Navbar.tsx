@@ -42,7 +42,7 @@ export default function Navbar() {
           : 'bg-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
         <div className="flex justify-between items-center h-16">
           <Link href="/" legacyBehavior>
             <a className="flex items-center space-x-3 cursor-pointer">
@@ -54,7 +54,7 @@ export default function Navbar() {
                 height={36}
                 priority // Ensures the logo loads quickly
               />
-              <span className={`text-xl font-bold ${isSolid ? 'text-gray-900' : 'text-white'}`}>
+              <span className={`text-lg sm:text-xl font-bold ${isSolid ? 'text-gray-900' : 'text-white'}`}>
                 TailorHire AI
               </span>
             </a>

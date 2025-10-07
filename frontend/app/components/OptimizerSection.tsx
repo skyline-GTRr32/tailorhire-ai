@@ -96,16 +96,16 @@ export default function OptimizerSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="responsive-h2 font-bold text-gray-900 mb-4">
              AI Resume Optimizer
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="responsive-body text-gray-600 max-w-4xl mx-auto">
             Upload your resume and job description to get an AI-optimized version 
             that beats ATS systems and gets you more interviews.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
+        <div className="responsive-grid-2 gap-6 lg:gap-8">
           {/* Input Section */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -184,7 +184,7 @@ export default function OptimizerSection() {
                     <h4 className="font-semibold text-gray-900 mb-3">Preview Your New PDF:</h4>
                     <iframe 
                         src={`data:application/pdf;base64,${result.optimized_resume_pdf_base64}`}
-                        className="w-full h-64 sm:h-72 md:h-80 border rounded-lg"
+                        className="w-full h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[500px] 2xl:h-[600px] border rounded-lg"
                         title="Optimized Resume Preview"
                     />
                 </div>

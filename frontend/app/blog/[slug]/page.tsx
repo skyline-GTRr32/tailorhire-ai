@@ -138,15 +138,15 @@ export default async function BlogPostPage({
     null;
 
   return (
-    <div className="bg-white">
+    <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
-      <main className="pt-24 pb-16">
+      <main className="flex-1 pt-24 pb-16">
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <header className="mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+            <h1 className="responsive-h1 font-bold text-gray-900 leading-tight">
               {title}
             </h1>
-            <p className="mt-4 text-md text-gray-500">
+            <p className="mt-4 text-sm sm:text-base text-gray-500">
               By {author} on{" "}
               {new Date(publishedAt).toLocaleDateString("en-US", {
                 year: "numeric",
@@ -157,7 +157,7 @@ export default async function BlogPostPage({
           </header>
 
           {imageUrl && (
-            <div className="relative h-96 w-full mb-8 rounded-2xl shadow-lg overflow-hidden">
+            <div className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] xl:h-[600px] w-full mb-8 rounded-2xl shadow-lg overflow-hidden">
               <Image
                 src={imageUrl}
                 alt={title}
@@ -168,7 +168,7 @@ export default async function BlogPostPage({
             </div>
           )}
 
-          <div className="prose lg:prose-xl mx-auto">{contentHtml}</div>
+          <div className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl mx-auto">{contentHtml}</div>
         </article>
       </main>
       <Footer />

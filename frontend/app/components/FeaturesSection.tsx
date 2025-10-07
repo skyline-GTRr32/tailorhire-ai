@@ -66,17 +66,17 @@ export default function FeaturesSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Why ResumeAI Works
+          <h2 className="responsive-h2 font-bold text-gray-900 mb-4">
+            Why TailorHire AI Works
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="responsive-body text-gray-600 max-w-4xl mx-auto">
             Our AI-powered platform combines cutting-edge technology with industry expertise 
             to deliver results that get you noticed by recruiters and ATS systems.
           </p>
         </motion.div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="responsive-grid gap-6 lg:gap-8">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
@@ -94,10 +94,10 @@ export default function FeaturesSection() {
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-semibold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors duration-300">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors duration-300">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
                   {feature.description}
                 </p>
               </div>
@@ -118,7 +118,7 @@ export default function FeaturesSection() {
             </h3>
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
               Join thousands of job seekers who have successfully optimized their resumes 
-              and landed their dream jobs with ResumeAI.
+              and landed their dream jobs with TailorHire AI.
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}

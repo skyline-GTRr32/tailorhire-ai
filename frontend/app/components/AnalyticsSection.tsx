@@ -49,16 +49,16 @@ export default function AnalyticsSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="responsive-h2 font-bold text-gray-900 mb-4">
             Real Results, Backed by Data
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="responsive-body text-gray-600 max-w-4xl mx-auto">
             See how our AI has transformed job searches and careers across the globe.
           </p>
         </motion.div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-20">
+        <div className="responsive-grid gap-6 lg:gap-8 mb-20">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -108,7 +108,7 @@ export default function AnalyticsSection() {
             How It Works
           </h3>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="responsive-grid-3 gap-6 lg:gap-8">
             {[
               {
                 step: '1',

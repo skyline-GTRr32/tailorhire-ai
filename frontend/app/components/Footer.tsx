@@ -20,8 +20,8 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <footer className="bg-gray-900 text-white mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8">
           {/* Brand Section */}
           <div className="lg:col-span-2">
@@ -35,10 +35,10 @@ export default function Footer() {
                   height={36}
                   className="rounded-md" // Optional: adds slightly rounded corners if your logo is square
                 />
-                <span className="text-xl font-bold">TailorHire AI</span>
+                <span className="text-lg sm:text-xl font-bold">TailorHire AI</span>
               </a>
             </Link>
-            <p className="text-gray-400 mb-6 leading-relaxed">
+            <p className="text-gray-400 mb-6 leading-relaxed text-sm sm:text-base">
               AI-powered resume tailoring to help you beat ATS systems and land more interviews.
             </p>
           </div>

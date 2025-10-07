@@ -31,7 +31,8 @@ export const metadata: Metadata = {
     ],
     apple: [
       { url: '/web-app-manifest-192x192.png', sizes: '192x192', type: 'image/png' }
-    ]
+    ],
+    shortcut: '/web-app-manifest-192x192.png'
   },
   manifest: '/manifest.json',
   openGraph: {

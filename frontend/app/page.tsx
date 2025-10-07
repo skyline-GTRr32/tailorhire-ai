@@ -30,23 +30,26 @@ export default function HomePage() {
 
   return (
     <ErrorBoundary>
-      <main className="min-h-screen bg-white">
+      <div className="min-h-screen flex flex-col">
         <Navbar />
         
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-        >
-          <Suspense fallback={<PageLoader />}>
-            <HeroSection />
-            <OptimizerSection />
-            <FeaturesSection />
-            <AnalyticsSection />
-            <Footer />
-          </Suspense>
-        </motion.div>
-      </main>
+        <main className="flex-1">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+          >
+            <Suspense fallback={<PageLoader />}>
+              <HeroSection />
+              <OptimizerSection />
+              <FeaturesSection />
+              <AnalyticsSection />
+            </Suspense>
+          </motion.div>
+        </main>
+        
+        <Footer />
+      </div>
     </ErrorBoundary>
   )
 }
