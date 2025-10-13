@@ -44,12 +44,17 @@ app = FastAPI(
 )
 
 # CORS
-origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+origins = [
+    "https://www.tailoredhireresume.com",
+    "https://tailoredhireresume.com", 
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 

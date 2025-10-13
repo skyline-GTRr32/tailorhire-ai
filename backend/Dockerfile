@@ -29,6 +29,7 @@ FROM python:3.11-slim as final
 # Copy system libraries from the builder stage
 COPY --from=builder /usr/lib/ /usr/lib/
 COPY --from=builder /lib/ /lib/
+COPY --from=builder /etc/fonts/ /etc/fonts/
 
 # Copy the virtual environment from the builder stage
 COPY --from=builder /opt/venv /opt/venv
