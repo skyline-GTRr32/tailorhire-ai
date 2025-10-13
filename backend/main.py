@@ -44,12 +44,8 @@ app = FastAPI(
 )
 
 # CORS
-origins = [
-    "https://www.tailoredhireresume.com",
-    "https://tailoredhireresume.com", 
-    "http://localhost:3000",
-    "http://127.0.0.1:3000"
-]
+origins = os.getenv("ALLOWED_ORIGINS", "https://www.tailoredhireresume.com,https://tailoredhireresume.com,http://localhost:3000").split(",")
+logger.info(f"🌐 CORS Origins configured: {origins}")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
