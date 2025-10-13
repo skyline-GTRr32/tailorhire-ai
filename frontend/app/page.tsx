@@ -9,7 +9,6 @@ import Navbar from './components/Navbar'
 import HeroSection from './components/HeroSection'
 import OptimizerSection from './components/OptimizerSection'
 import FeaturesSection from './components/FeaturesSection'
-import AnalyticsSection from './components/AnalyticsSection'
 import Footer from './components/Footer'
 import AdUnit from './components/AdUnit'
 
@@ -43,7 +42,6 @@ export default function HomePage() {
               <HeroSection />
               <OptimizerSection />
               <FeaturesSection />
-              <AnalyticsSection />
             </Suspense>
           </motion.div>
         </main>

@@ -88,12 +88,10 @@ class FileService:
             
         except Exception as e:
             logger.error(f"❌ PDF extraction failed: {str(e)}", exc_info=True)
-            raise
-    
-            # Return placeholder for demo
+            # Return placeholder for demo instead of raising
             return f"""PDF Processing Note:
             
-Your PDF file "{content[:50]}..." was uploaded successfully, but automatic text extraction encountered an issue.
+Your PDF file was uploaded successfully, but automatic text extraction encountered an issue.
 
 For best results, please:
 1. Copy and paste your resume text directly into the text area
