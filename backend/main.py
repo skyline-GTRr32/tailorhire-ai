@@ -43,16 +43,31 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# CORS
-origins = os.getenv("ALLOWED_ORIGINS", "https://www.tailoredhireresume.com,https://tailoredhireresume.com,http://localhost:3000").split(",")
+# CORS - Enhanced configuration for production
+allowed_origins_str = os.getenv(
+    "ALLOWED_ORIGINS", 
+    "https://www.tailoredhireresume.com,https://tailoredhireresume.com,http://localhost:3000"
+)
+origins = [origin.strip() for origin in allowed_origins_str.split(",")]
 logger.info(f"🌐 CORS Origins configured: {origins}")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Allow all methods including OPTIONS
+    allow_headers=["*"],  # Allow all headers
+    expose_headers=["*"],  # Expose all headers
+    max_age=3600,  # Cache preflight requests for 1 hour
 )
+
+# Request logging middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"🔵 {request.method} {request.url.path} - Origin: {request.headers.get('origin', 'N/A')}")
+    response = await call_next(request)
+    logger.info(f"🟢 Response: {response.status_code}")
+    return response
 
 # ----------------------
 # Pydantic Models
@@ -86,6 +101,18 @@ async def health_check():
         status="healthy",
         timestamp=datetime.now().isoformat(),
         version="1.1.0"
+    )
+
+# Explicit OPTIONS handler for CORS preflight
+@app.options("/api/{full_path:path}")
+async def options_handler():
+    return JSONResponse(
+        content={"message": "OK"},
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+        }
     )
 
 @app.post("/api/optimize", response_model=ResumeOptimizeResponse)
@@ -136,18 +163,25 @@ async def upload_resume(file: UploadFile = File(...), user_ip: str = Depends(rat
         logger.info(f"📤 Upload started: {file.filename} ({file.content_type})")
 
         if not file.filename:
+            logger.warning("⚠️ No filename provided")
             raise HTTPException(status_code=400, detail="No file provided")
 
         if file.content_type not in ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]:
+            logger.warning(f"⚠️ Invalid content type: {file.content_type}")
             raise HTTPException(status_code=400, detail="Only PDF and DOCX supported")
 
         resume_bytes = await file.read()
+        logger.info(f"📄 File read successfully: {len(resume_bytes)} bytes")
+        
         extracted_text = ai_service._extract_text_from_pdf(resume_bytes)
+        logger.info(f"✅ Text extraction successful: {len(extracted_text)} characters")
 
         return {"text": extracted_text, "filename": file.filename, "length": len(extracted_text)}
+    except HTTPException as he:
+        raise he
     except Exception as e:
-        logger.error(f"❌ Upload failed: {e}")
-        raise HTTPException(status_code=500, detail="File processing failed")
+        logger.error(f"❌ Upload failed: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"File processing failed: {str(e)}")
 
 # ----------------------
 # Startup
